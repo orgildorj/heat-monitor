@@ -1,0 +1,331 @@
+openapi: 3.1.1
+info:
+  title: HREG API
+  version: 0.0.5
+servers:
+- url: /
+paths:
+  /api/user:
+    get:
+      description: Get User from Engineer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_api_user_get_200_response"
+          description: List of Users
+  /api/device:
+    get:
+      description: Get devices from Engineer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_api_device_get_200_response"
+          description: List of Devices
+  /api/param/defines:
+    get:
+      description: List of all Param Defines
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_api_param_defines_get_200_response"
+          description: List of Param Defines
+  /api/param/up/{device_id}/{param_id}:
+    get:
+      description: Get Param Up with param_id and device_id. This is the last Param
+        sent by the device
+      parameters:
+      - explode: false
+        in: path
+        name: device_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: param_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParamUp"
+          description: Param Up
+  /api/param:
+    post:
+      description: Send Parameter to Device
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/_api_param_post_request"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: "Param down created, no response."
+components:
+  parameters: {}
+  schemas:
+    User:
+      example:
+        user_id: 0.8008281904610115
+        user_name: user_name
+        long_name: long_name
+      properties:
+        user_id:
+          type: number
+        user_name:
+          type: string
+        long_name:
+          nullable: true
+          type: string
+      required:
+      - long_name
+      - user_id
+      - user_name
+    Device:
+      example:
+        cust_user_id: 6.027456183070403
+        last_device_ip: last_device_ip
+        device_name: device_name
+        last_time_online: 2000-01-23T04:56:07.000+00:00
+        swver: swver
+        device_id: 0.8008281904610115
+        devtyp_id: 1.4658129805029452
+        mb_serno: mb_serno
+        hwver: hwver
+        mb_nums: mb_nums
+        Seriennum: Seriennum
+        action: 5.962133916683182
+      properties:
+        device_id:
+          type: number
+        device_name:
+          type: string
+        Seriennum:
+          nullable: true
+          type: string
+        last_device_ip:
+          nullable: true
+          type: string
+        last_time_online:
+          format: date-time
+          nullable: true
+          type: string
+        hwver:
+          nullable: true
+          type: string
+        swver:
+          nullable: true
+          type: string
+        cust_user_id:
+          nullable: true
+          type: number
+        devtyp_id:
+          nullable: true
+          type: number
+        mb_nums:
+          nullable: true
+          type: string
+        action:
+          nullable: true
+          type: number
+        mb_serno:
+          nullable: true
+          type: string
+      required:
+      - Seriennum
+      - action
+      - cust_user_id
+      - device_id
+      - device_name
+      - devtyp_id
+      - hwver
+      - last_device_ip
+      - last_time_online
+      - mb_nums
+      - mb_serno
+      - swver
+    ParamDefines:
+      example:
+        label_detail: label_detail
+        access: access
+        unit_detail: unit_detail
+        hreg_name: hreg_name
+        param_usage: 6.027456183070403
+        label_chart: label_chart
+        attrib_detail: attrib_detail
+        param_id: 0.8008281904610115
+      properties:
+        param_id:
+          type: number
+        hreg_name:
+          nullable: true
+          type: string
+        label_detail:
+          nullable: true
+          type: string
+        label_chart:
+          nullable: true
+          type: string
+        param_usage:
+          nullable: true
+          type: number
+        unit_detail:
+          nullable: true
+          type: string
+        attrib_detail:
+          nullable: true
+          type: string
+        access:
+          nullable: true
+          type: string
+      required:
+      - access
+      - attrib_detail
+      - hreg_name
+      - label_chart
+      - label_detail
+      - param_id
+      - param_usage
+      - unit_detail
+    ParamUp:
+      example:
+        up_sss: 5.962133916683182
+        value_str: value_str
+        device_id: 1.4658129805029452
+        up_time: 2000-01-23T04:56:07.000+00:00
+        up_id: 0.8008281904610115
+        param_id: 6.027456183070403
+      properties:
+        up_id:
+          type: number
+        param_id:
+          nullable: true
+          type: number
+        device_id:
+          nullable: true
+          type: number
+        value_str:
+          nullable: true
+          type: string
+        up_time:
+          format: date-time
+          nullable: true
+          type: string
+        up_sss:
+          nullable: true
+          type: number
+      required:
+      - device_id
+      - param_id
+      - up_id
+      - up_sss
+      - up_time
+      - value_str
+    _api_user_get_200_response:
+      example:
+        users:
+        - user_id: 0.8008281904610115
+          user_name: user_name
+          long_name: long_name
+        - user_id: 0.8008281904610115
+          user_name: user_name
+          long_name: long_name
+      properties:
+        users:
+          items:
+            $ref: "#/components/schemas/User"
+          type: array
+      required:
+      - users
+    _api_device_get_200_response:
+      example:
+        devices:
+        - cust_user_id: 6.027456183070403
+          last_device_ip: last_device_ip
+          device_name: device_name
+          last_time_online: 2000-01-23T04:56:07.000+00:00
+          swver: swver
+          device_id: 0.8008281904610115
+          devtyp_id: 1.4658129805029452
+          mb_serno: mb_serno
+          hwver: hwver
+          mb_nums: mb_nums
+          Seriennum: Seriennum
+          action: 5.962133916683182
+        - cust_user_id: 6.027456183070403
+          last_device_ip: last_device_ip
+          device_name: device_name
+          last_time_online: 2000-01-23T04:56:07.000+00:00
+          swver: swver
+          device_id: 0.8008281904610115
+          devtyp_id: 1.4658129805029452
+          mb_serno: mb_serno
+          hwver: hwver
+          mb_nums: mb_nums
+          Seriennum: Seriennum
+          action: 5.962133916683182
+      properties:
+        devices:
+          items:
+            $ref: "#/components/schemas/Device"
+          type: array
+      required:
+      - devices
+    _api_param_defines_get_200_response:
+      example:
+        params:
+        - label_detail: label_detail
+          access: access
+          unit_detail: unit_detail
+          hreg_name: hreg_name
+          param_usage: 6.027456183070403
+          label_chart: label_chart
+          attrib_detail: attrib_detail
+          param_id: 0.8008281904610115
+        - label_detail: label_detail
+          access: access
+          unit_detail: unit_detail
+          hreg_name: hreg_name
+          param_usage: 6.027456183070403
+          label_chart: label_chart
+          attrib_detail: attrib_detail
+          param_id: 0.8008281904610115
+      properties:
+        params:
+          items:
+            $ref: "#/components/schemas/ParamDefines"
+          type: array
+      required:
+      - params
+    _api_param_post_request:
+      properties:
+        device_id:
+          type: number
+        param_id:
+          type: number
+        value_str:
+          type: string
+      required:
+      - device_id
+      - param_id
+      - value_str
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http

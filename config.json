@@ -1,0 +1,124 @@
+{
+  "db": {
+    "host": "postgres",
+    "port": 5432,
+    "name": "heat_monitor",
+    "user": "admin",
+    "password": "1998"
+  },
+  "backend": {
+    "port": 8080
+  },
+  "hreg": {
+    "token": "eyJ1aWQiOiI2MyIsInRva2VuIjoiaGJFaEVGZldteWdpVktCQjFBTlFnVUNjeDVLdXZ5REsifQ==",
+    "collect_interval_min": 5,
+    "customers": [
+      { "user_id": 15, "long_name": "BSD1 Wessling", "device_id": 7 },
+      { "user_id": 20, "long_name": "Reinheimer", "device_id": 11 },
+      { "user_id": 14, "long_name": "BSD2 Puchheim", "device_id": 16 },
+      { "user_id": 17, "long_name": "BSD3 Manhardt", "device_id": 20 },
+      { "user_id": 40, "long_name": "BSD Faber", "device_id": 26 },
+      { "user_id": 50, "long_name": "Dotzauer", "device_id": 112 },
+      { "user_id": 53, "long_name": "Fam. Oeller", "device_id": 46 },
+      { "user_id": 55, "long_name": "Buttermann", "device_id": 48 },
+      { "user_id": 60, "long_name": "Hansen", "device_id": 52 },
+      { "user_id": 102, "long_name": "Fam. Hartmann", "device_id": 70 },
+      { "user_id": 106, "long_name": "Teusch", "device_id": 74 },
+      { "user_id": 108, "long_name": "Fam. R. Doerk", "device_id": 76 },
+      { "user_id": 118, "long_name": "Buerk", "device_id": 85 },
+      { "user_id": 130, "long_name": "Zoll & Fuchs", "device_id": 96 },
+      { "user_id": 137, "long_name": "Barth", "device_id": 101 },
+      { "user_id": 139, "long_name": "Hass", "device_id": 103 },
+      { "user_id": 141, "long_name": "Geuss", "device_id": 105 },
+      { "user_id": 142, "long_name": "Fam. Rieger", "device_id": 106 },
+      { "user_id": 151, "long_name": "Karl Beschoner", "device_id": 113 },
+      { "user_id": 155, "long_name": "b79703", "device_id": 116 },
+      { "user_id": 154, "long_name": "Hofmann", "device_id": 115 },
+      { "user_id": 156, "long_name": "Volkmar", "device_id": 117 },
+      { "user_id": 159, "long_name": "Schwepcke", "device_id": 120 },
+      { "user_id": 161, "long_name": "Stoepetie", "device_id": 122 },
+      { "user_id": 164, "long_name": "Siegel", "device_id": 123 }
+    ],
+    "parameters": [
+      {
+        "param_id": 1107,
+        "label": "Ausschaltgrenze bei Heizbetrieb",
+        "col_name": "ausschaltgrenze_heizbetrieb",
+        "access": "rw"
+      },
+      {
+        "param_id": 1106,
+        "label": "Einschaltgrenze bei Heizbetrieb",
+        "col_name": "einschaltgrenze_heizbetrieb",
+        "access": "rw"
+      },
+      {
+        "param_id": 651,
+        "label": "Puffer T1",
+        "col_name": "puffer_t1",
+        "access": "ro"
+      },
+      {
+        "param_id": 652,
+        "label": "Puffer T2",
+        "col_name": "puffer_t2",
+        "access": "ro"
+      },
+      {
+        "param_id": 653,
+        "label": "Puffer T3",
+        "col_name": "puffer_t3",
+        "access": "ro"
+      },
+      {
+        "param_id": 654,
+        "label": "Puffer T4",
+        "col_name": "puffer_t4",
+        "access": "ro"
+      },
+      {
+        "param_id": 1104,
+        "label": "Ausschaltgrenze bei WW",
+        "col_name": "ausschaltgrenze_ww",
+        "access": "rw"
+      },
+      {
+        "param_id": 1102,
+        "label": "Einschaltgrenze bei WW",
+        "col_name": "einschaltgrenze_ww",
+        "access": "rw"
+      },
+
+      {
+        "param_id": 643,
+        "label": "EZ1 Kessel",
+        "col_name": "ez1_kessel",
+        "access": "rw"
+      },
+      {
+        "param_id": 646,
+        "label": "EZ2 Kessel",
+        "col_name": "ez2_kessel",
+        "access": "rw"
+      },
+      {
+        "param_id": 1101,
+        "label": "ZK Einschaltpunkt",
+        "col_name": "zk_einschaltpunkt",
+        "access": "rw"
+      },
+      {
+        "param_id": 693,
+        "label": "HK1 Vorlauf Soll [°C]",
+        "col_name": "hk1_vorlauf_soll",
+        "access": "rw"
+      },
+      {
+        "param_id": 714,
+        "label": "HK2 Vorlauf Soll [°C]",
+        "col_name": "hk2_vorlauf_soll",
+        "access": "rw"
+      }
+    ]
+  }
+}

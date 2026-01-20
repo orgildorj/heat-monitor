@@ -1,0 +1,81 @@
+[
+  {
+    "param_id": 1107,
+    "label": "Ausschaltgrenze bei Heizbetrieb",
+    "col_name": "ausschaltgrenze_heizbetrieb",
+    "access": "rw"
+  },
+  {
+    "param_id": 1106,
+    "label": "Einschaltgrenze bei Heizbetrieb",
+    "col_name": "einschaltgrenze_heizbetrieb",
+    "access": "rw"
+  },
+  {
+    "param_id": 651,
+    "label": "Puffer T1",
+    "col_name": "puffer_t1",
+    "access": "ro"
+  },
+  {
+    "param_id": 652,
+    "label": "Puffer T2",
+    "col_name": "puffer_t2",
+    "access": "ro"
+  },
+  {
+    "param_id": 653,
+    "label": "Puffer T3",
+    "col_name": "puffer_t3",
+    "access": "ro"
+  },
+  {
+    "param_id": 654,
+    "label": "Puffer T4",
+    "col_name": "puffer_t4",
+    "access": "ro"
+  },
+  {
+    "param_id": 1104,
+    "label": "Ausschaltgrenze bei WW",
+    "col_name": "ausschaltgrenze_ww",
+    "access": "rw"
+  },
+  {
+    "param_id": 1102,
+    "label": "Einschaltgrenze bei WW",
+    "col_name": "einschaltgrenze_ww",
+    "access": "rw"
+  },
+
+  {
+    "param_id": 643,
+    "label": "EZ1 Kessel",
+    "col_name": "ez1_kessel",
+    "access": "rw"
+  },
+  {
+    "param_id": 646,
+    "label": "EZ2 Kessel",
+    "col_name": "ez2_kessel",
+    "access": "rw"
+  },
+  {
+    "param_id": 1101,
+    "label": "ZK Einschaltpunkt",
+    "col_name": "zk_einschaltpunkt",
+    "access": "rw"
+  },
+  {
+    "param_id": 693,
+    "label": "HK1 Vorlauf Soll [°C]",
+    "col_name": "hk1_vorlauf_soll",
+    "access": "rw"
+  },
+  {
+    "param_id": 714,
+    "label": "HK2 Vorlauf Soll [°C]",
+    "col_name": "hk2_vorlauf_soll",
+    "access": "rw"
+  }
+]
