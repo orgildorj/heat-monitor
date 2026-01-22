@@ -19,27 +19,51 @@ export interface HeatingData {
   Time: string;
 }
 
-export interface BackendResponse {
-  success: boolean;
-  data: BackendCustomerData[];
+/*
+type HeatingDataResponse struct {
+  CustomerId   int
+  DeviceId     int
+  CustomerName string
+  Parameters   map[string]*ParameterData
+  LastUpdated  time.Time
 }
 
-export interface BackendCustomerData {
-  Customer: {
-    user_id: string;
-    device_id: string;
-    long_name: string;
-    additional_info?: string;
-  };
-  HeatingDatas: HeatingData[];
+type ParameterData struct {
+  Label string  `json:"label"`
+  Value float64 `json:"value"`
+}
+*/
+
+interface ParameterData {
+  Label: string,
+  Value: number
+}
+
+export interface BackendResponseData {
+  CustomerId: number;
+  DeviceId: number;
+  CustomerName: string;
+  Parameters: { [key: string]: ParameterData },
   LastUpdated: string;
 }
 
+const months = [
+  "Januar", "Februar", "März", "April", "Mai", "Juni",
+  "Juli", "August", "September", "Oktober", "November", "Dezember"
+];
+
 export const formatDateTime = (dateString: string) => {
-  return new Date(dateString).toLocaleTimeString("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const d = new Date(dateString);
+
+  const formattedUTC =
+    `${String(d.getUTCHours()).padStart(2, "0")}:` +
+    `${String(d.getUTCMinutes()).padStart(2, "0")}:` +
+    `${String(d.getUTCSeconds()).padStart(2, "0")}, ` +
+    `${String(d.getUTCDate()).padStart(2, "0")}.` +
+    `${String(d.getUTCMonth() + 1).padStart(2, "0")}.` +
+    `${d.getUTCFullYear()}`;
+
+  return formattedUTC
 };
 
 export const formatTimeAgo = (dateString: string) => {

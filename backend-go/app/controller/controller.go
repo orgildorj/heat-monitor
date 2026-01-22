@@ -11,10 +11,7 @@ import (
 func GetAllCurrentData(c *gin.Context, hm *service.HeatingMonitor) {
 	data := hm.GetCurrentData()
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    data,
-	})
+	c.JSON(http.StatusOK, data)
 }
 
 func GetCustomerData(c *gin.Context, hm *service.HeatingMonitor) {
@@ -24,8 +21,7 @@ func GetCustomerData(c *gin.Context, hm *service.HeatingMonitor) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   "customerId not integer",
+			"error": "customerId not integer",
 		})
 		return
 	}
@@ -33,14 +29,10 @@ func GetCustomerData(c *gin.Context, hm *service.HeatingMonitor) {
 	data, exists := hm.GetCustomerData(intId)
 	if !exists {
 		c.JSON(http.StatusNotFound, gin.H{
-			"success": false,
-			"error":   "customer not found",
+			"error": "customer not found",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    data,
-	})
+	c.JSON(http.StatusOK, data)
 }

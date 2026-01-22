@@ -18,6 +18,8 @@ var (
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags)
+
 	var err error
 	configMgr, err = config.NewConfigManager("config.json")
 	if err != nil {

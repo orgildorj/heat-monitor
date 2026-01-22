@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func initCustomers(configMgr *config.ConfigManager, db *gorm.DB) error {
@@ -31,7 +32,9 @@ func initCustomers(configMgr *config.ConfigManager, db *gorm.DB) error {
 func Init(configMgr *config.ConfigManager) (*gorm.DB, error) {
 	cfg := configMgr.Get()
 
-	db, err := gorm.Open(postgres.Open(cfg.GetDBConnectionString()), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(cfg.GetDBConnectionString()), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 
 	if err != nil {
 		return nil, err

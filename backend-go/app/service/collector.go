@@ -91,28 +91,64 @@ func (c *HeatingDataCollector) fetchHeatingData(customerConfig config.CustomerCo
 	return result, nil
 }
 
+func (c *HeatingDataCollector) fetchLastOnline(responseDatas *[]HeatingDataResponse) error {
+	resp, _, err := c.hregClient.DefaultAPI.ApiDeviceGet(c.hregCtx).Execute()
+	if err != nil {
+		return fmt.Errorf("Error when running fetchHeatingData: %v", err)
+	}
+
+	for i := range *responseDatas {
+		for _, device := range resp.GetDevices() {
+			if device.DeviceId == float32((*responseDatas)[i].DeviceId) {
+				(*responseDatas)[i].LastUpdated = device.GetLastTimeOnline()
+				break
+			}
+		}
+	}
+	return nil
+}
+
+func heatingDataToResponse(dataList []*model.HeatingData) map[string]*ParameterData {
+	parameters := make(map[string]*ParameterData)
+
+	for _, data := range dataList {
+		parameters[data.ColName] = &ParameterData{
+			Label: data.Label,
+			Value: data.Value,
+		}
+	}
+
+	return parameters
+}
+
 /*
 FetchAllCustomerData retrieves data for all configured devices
 1. loop through devices
   - invoke FetchHeatingData
 */
-func (c *HeatingDataCollector) FetchAllCustomerData() ([]CurrentData, error) {
+func (c *HeatingDataCollector) FetchAllCustomerData() ([]HeatingDataResponse, error) {
 	cfg := c.configMgr.Get()
 
-	var currentData []CurrentData
+	var currentData []HeatingDataResponse
 
 	for i := 0; i < len(cfg.Hreg.Customers); i++ {
-		heatingDatas, err := c.fetchHeatingData(cfg.Hreg.Customers[i])
+		customerConfig := cfg.Hreg.Customers[i]
+		heatingDatas, err := c.fetchHeatingData(customerConfig)
 		if err != nil {
 			return nil, err
 		}
 
-		currentData = append(currentData, CurrentData{
-			Customer:     cfg.Hreg.Customers[i],
-			HeatingDatas: heatingDatas,
-			LastUpdated:  heatingDatas[0].Time,
+		currentData = append(currentData, HeatingDataResponse{
+			CustomerId:   customerConfig.UserId,
+			DeviceId:     customerConfig.DeviceId,
+			CustomerName: customerConfig.LongName,
+			Parameters:   heatingDataToResponse(heatingDatas),
 		})
+	}
 
+	err := c.fetchLastOnline(&currentData)
+	if err != nil {
+		return nil, err
 	}
 
 	return currentData, nil

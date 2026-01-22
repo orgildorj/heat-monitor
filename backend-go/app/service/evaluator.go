@@ -20,7 +20,7 @@ func NewHeatingEvaluator(configMgr *config.ConfigManager, db *gorm.DB) *HeatingE
 }
 
 // EvaluateHeatingData performs comprehensive evaluation of heating data
-func (e *HeatingEvaluator) EvaluateHeatingData(currentData CurrentData) error {
+func (e *HeatingEvaluator) EvaluateHeatingData(currentData []HeatingDataResponse) error {
 	// result := &model.EvaluationResult{
 	// 	DeviceID:  current.DeviceID,
 	// 	Timestamp: time.Now(),

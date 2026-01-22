@@ -3,7 +3,6 @@ package service
 
 import (
 	"hm-backend/config"
-	"hm-backend/model"
 	"log"
 	"sync"
 
@@ -17,13 +16,20 @@ type HeatingMonitor struct {
 	evaluator *HeatingEvaluator
 	configMgr *config.ConfigManager
 
-	currentData []CurrentData
+	currentData []HeatingDataResponse
 	dataMutex   sync.RWMutex
 }
 
-type CurrentData struct {
-	Customer     config.CustomerConfig
-	HeatingDatas []*model.HeatingData
+type ParameterData struct {
+	Label string
+	Value float64
+}
+
+type HeatingDataResponse struct {
+	CustomerId   int
+	DeviceId     int
+	CustomerName string
+	Parameters   map[string]*ParameterData
 	LastUpdated  time.Time
 }
 
@@ -35,26 +41,26 @@ func NewHeatingMonitor(
 		collector:   NewHeatingDataCollector(configMgr, db),
 		evaluator:   NewHeatingEvaluator(configMgr, db),
 		configMgr:   configMgr,
-		currentData: make([]CurrentData, 0),
+		currentData: make([]HeatingDataResponse, 0),
 	}
 }
 
-func (m *HeatingMonitor) GetCurrentData() []CurrentData {
+func (m *HeatingMonitor) GetCurrentData() []HeatingDataResponse {
 	m.dataMutex.RLock()
 	defer m.dataMutex.RUnlock()
 
-	dataCopy := make([]CurrentData, len(m.currentData))
+	dataCopy := make([]HeatingDataResponse, len(m.currentData))
 	copy(dataCopy, m.currentData)
 
 	return dataCopy
 }
 
-func (m *HeatingMonitor) GetCustomerData(customerID int) (*CurrentData, bool) {
+func (m *HeatingMonitor) GetCustomerData(customerID int) (*HeatingDataResponse, bool) {
 	m.dataMutex.RLock()
 	defer m.dataMutex.RUnlock()
 
 	for _, data := range m.currentData {
-		if data.Customer.UserId == customerID {
+		if data.CustomerId == customerID {
 			return &data, true
 		}
 	}
@@ -91,9 +97,9 @@ func (m *HeatingMonitor) runMonitoringCycle() {
 
 	log.Printf("Collected data from %d devices", len(collectedData))
 
-	for i := range collectedData {
-		collectedData[i].LastUpdated = time.Now()
-	}
+	// for i := range collectedData {
+	// 	collectedData[i].LastUpdated = time.Now()
+	// }
 
 	m.dataMutex.Lock()
 	m.currentData = collectedData
