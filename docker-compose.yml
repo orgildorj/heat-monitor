@@ -34,13 +34,13 @@ services:
     volumes:
       - ./config.json:/app/config.json:rw
 
-  # frontend:
-  #   build: ./frontend
-  #   ports:
-  #     - "80:3000"
-  #   environment:
-  #     NODE_ENV: production
-  #   restart: unless-stopped
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:3000"
+    environment:
+      NODE_ENV: development
+    restart: unless-stopped
 
 volumes:
   postgres_data:
