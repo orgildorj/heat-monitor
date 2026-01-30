@@ -8,6 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+    # - C:/heat-manager-server/pgdata:/var/lib/postgresql
       - postgres_data:/var/lib/postgresql
     restart: unless-stopped
 
@@ -20,6 +21,8 @@ services:
     ports:
       - "5050:80"
     restart: unless-stopped
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 
   backend:
     build: ./backend-go
@@ -31,5 +34,14 @@ services:
     volumes:
       - ./config.json:/app/config.json:rw
 
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "80:3000"
+  #   environment:
+  #     NODE_ENV: production
+  #   restart: unless-stopped
+
 volumes:
   postgres_data:
+  pgadmin_data:

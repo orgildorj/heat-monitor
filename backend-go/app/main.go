@@ -2,8 +2,8 @@ package main
 
 import (
 	"hm-backend/config"
-	"hm-backend/controller"
 	"hm-backend/db"
+	"hm-backend/handler"
 	"hm-backend/service"
 	"log"
 	"net/http"
@@ -60,11 +60,23 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.GET("/heating/current", func(c *gin.Context) {
-			controller.GetAllCurrentData(c, heatingMonitor)
+			handler.GetAllCurrentData(c, heatingMonitor)
 		})
 
 		api.GET("/heating/current/:customer_id", func(c *gin.Context) {
-			controller.GetCustomerData(c, heatingMonitor)
+			handler.GetCustomerData(c, heatingMonitor)
+		})
+
+		api.GET("/graph-data", func(c *gin.Context) {
+			handler.GetGraphData(c, db_instance)
+		})
+
+		api.GET("/graph-data/stats", func(c *gin.Context) {
+			handler.GetGraphDataStats(c, db_instance)
+		})
+
+		api.GET("/available-columns", func(c *gin.Context) {
+			handler.GetAvailableColumns(c, db_instance)
 		})
 	}
 

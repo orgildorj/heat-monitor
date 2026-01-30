@@ -97,35 +97,23 @@ func (m *HeatingMonitor) runMonitoringCycle() {
 
 	log.Printf("Collected data from %d devices", len(collectedData))
 
-	// for i := range collectedData {
-	// 	collectedData[i].LastUpdated = time.Now()
-	// }
-
 	m.dataMutex.Lock()
 	m.currentData = collectedData
 	m.dataMutex.Unlock()
 
-	// Step 2: Evaluate each device and save
 	successCount := 0
-	// for _, customerData := range currentData {
-	// 	// Evaluate
-	// 	// result, err := m.evaluator.EvaluateHeatingData(customerData)
-	// 	// if err != nil {
-	// 	// 	log.Printf("ERROR: Evaluation failed for device %s: %v", data.DeviceID, err)
-	// 	// 	continue
-	// 	// }
 
-	// 	// // Save to database
-	// 	// if err := m.repository.SaveHeatingDataWithEvaluation(data, result); err != nil {
-	// 	// 	log.Printf("ERROR: Failed to save data for device %s: %v", data.DeviceID, err)
-	// 	// 	continue
-	// 	// }
+	cfg := m.configMgr.Get()
 
-	// 	// successCount++
+	for _, customerConfig := range cfg.Hreg.Customers {
+		_, err := m.evaluator.Evaluate(customerConfig)
+		if err != nil {
+			log.Println("Error while evaluating device with id %v :%v", customerConfig.DeviceId, err)
+			continue
+		}
 
-	// 	// // Log evaluation results
-	// 	// m.logEvaluationResult(data, result)
-	// }
+		successCount++
+	}
 
 	duration := time.Since(startTime)
 	log.Printf("=== Monitoring cycle completed in %v (%d/%d devices successful) ===",

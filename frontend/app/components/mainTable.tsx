@@ -111,7 +111,7 @@ export const MainTable = ({ data }: Props) => {
               <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
                 <button
                   onClick={() => {
-                    router.push(`/graph/${row.original.CustomerId}`)
+                    router.push(`/graph?customer_id=${row.original.CustomerId}`)
                     console.log("Show Graph", row.original);
                     setOpen(false);
                   }}

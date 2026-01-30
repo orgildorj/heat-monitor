@@ -59,8 +59,8 @@ export const formatDateTime = (dateString: string) => {
     `${String(d.getUTCHours()).padStart(2, "0")}:` +
     `${String(d.getUTCMinutes()).padStart(2, "0")}:` +
     `${String(d.getUTCSeconds()).padStart(2, "0")}, ` +
-    `${String(d.getUTCDate()).padStart(2, "0")}.` +
-    `${String(d.getUTCMonth() + 1).padStart(2, "0")}.` +
+    `${String(d.getUTCDate()).padStart(2, "0")}/` +
+    `${String(d.getUTCMonth() + 1).padStart(2, "0")}/` +
     `${d.getUTCFullYear()}`;
 
   return formattedUTC

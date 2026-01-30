@@ -11,7 +11,7 @@
   },
   "hreg": {
     "token": "eyJ1aWQiOiI2MyIsInRva2VuIjoiaGJFaEVGZldteWdpVktCQjFBTlFnVUNjeDVLdXZ5REsifQ==",
-    "collect_interval_min": 5,
+    "collect_interval_min": 15,
     "customers": [
       { "user_id": 15, "long_name": "BSD1 Wessling", "device_id": 7 },
       { "user_id": 20, "long_name": "Reinheimer", "device_id": 11 },
