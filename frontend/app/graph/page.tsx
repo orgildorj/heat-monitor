@@ -2,14 +2,20 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import dynamic from "next/dynamic";
 import { BACKEND_API } from "@/util/urlUtils";
 import Link from "next/link";
 import Select from "react-select";
 import { GraphDataResponse, PRESET_RANGES, StatsResponse, AvailableColumn, getInitialDateRange } from "@/util/graphUtils"
-
-// Dynamic import for Plotly to avoid SSR issues
-const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer
+} from "recharts";
 
 const CustomerGraphPage = () => {
     const searchParams = useSearchParams();
@@ -114,72 +120,96 @@ const CustomerGraphPage = () => {
         }
     };
 
-    // Prepare Plotly data
-    const plotlyData = useMemo(() => {
+    // Prepare Recharts data
+    const chartData = useMemo(() => {
         if (!graphData?.data || selectedColumns.length === 0) return [];
 
         const sorted = [...graphData.data].sort(
             (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
         );
 
-        const times = sorted.map(p => new Date(p.time));
+        // Max gap in milliseconds before breaking the line (e.g., 1 hour)
+        const MAX_GAP_MS = 60 * 60 * 1000; // 1 hour
 
-        return selectedColumns.map(colName => {
-            const col = availableColumns.find(c => c.col_name === colName);
+        const result: any[] = [];
 
-            return {
-                x: times,
-                y: sorted.map(p => p.values?.[colName] ?? null),
-                type: "scatter",
-                mode: "lines",
-                name: col?.label || colName,
-                connectgaps: true,
-                hovertemplate: "%{y:.1f}°C<extra>%{fullData.name}</extra>",
-            };
+        sorted.forEach((point, index) => {
+            const date = new Date(point.time);
+            const formatted = `${date.getUTCDate()}. ${date.toLocaleString('de-DE', {
+                month: 'short',
+                timeZone: 'UTC'
+            })} ${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
+
+            // Add the current point
+            result.push({
+                time: formatted,
+                timestamp: date.getTime(),
+                ...selectedColumns.reduce((acc, colName) => ({
+                    ...acc,
+                    [colName]: point.values?.[colName] ?? null
+                }), {})
+            });
+
+            // Check if there's a gap to the next point
+            if (index < sorted.length - 1) {
+                const currentTime = date.getTime();
+                const nextTime = new Date(sorted[index + 1].time).getTime();
+                const gap = nextTime - currentTime;
+
+                // If gap is too large, insert a null point to break the line
+                if (gap > MAX_GAP_MS) {
+                    result.push({
+                        time: '',
+                        timestamp: currentTime + 1, // Just after current point
+                        ...selectedColumns.reduce((acc, colName) => ({
+                            ...acc,
+                            [colName]: null
+                        }), {})
+                    });
+                }
+            }
         });
-    }, [graphData, selectedColumns, availableColumns]);
 
-    const plotlyLayout = {
-        autosize: true,
-        height: 500,
-        margin: { l: 60, r: 20, t: 40, b: 60 },
-        xaxis: {
-            title: "",
-            showgrid: true,
-            gridcolor: "#e5e7eb",
-            showline: true,
-            linecolor: "#6b7280",
-            type: "date" as const,
-            range: graphData ? [graphData.start_time, graphData.end_time] : undefined,
-        },
-        yaxis: {
-            title: "Temperatur (°C)",
-            showgrid: true,
-            gridcolor: "#e5e7eb",
-            showline: true,
-            linecolor: "#6b7280",
-        },
-        legend: {
-            orientation: "v",
-            x: 1.02,
-            y: 1,
-            xanchor: "left",
-            yanchor: "top",
-            bgcolor: "rgba(255,255,255,0.9)",
-            bordercolor: "#ddd",
-            borderwidth: 1,
-            font: { size: 12 },
-        },
-        hovermode: "x unified" as const,
-        plot_bgcolor: "white",
-        paper_bgcolor: "white",
-    };
+        return result;
+    }, [graphData, selectedColumns]);
 
-    const plotlyConfig = {
-        responsive: true,
-        displayModeBar: true,
-        modeBarButtonsToRemove: ["lasso2d", "select2d"],
-        displaylogo: false,
+    // Color palette for lines
+    const colors = [
+        "#3b82f6", // blue
+        "#ef4444", // red
+        "#10b981", // green
+        "#f59e0b", // amber
+        "#8b5cf6", // violet
+        "#ec4899", // pink
+        "#06b6d4", // cyan
+        "#f97316", // orange
+    ];
+
+    // Custom tooltip
+    const CustomTooltip = ({ active, payload, label }: any) => {
+        if (active && payload && payload.length) {
+            // Format the timestamp
+            const date = new Date(label);
+            const formattedTime = `${date.getUTCDate()}. ${date.toLocaleString('de-DE', {
+                month: 'short',
+                timeZone: 'UTC'
+            })} ${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
+
+            return (
+                <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+                    <p className="text-sm font-semibold text-gray-900 mb-2">{formattedTime}</p>
+                    {payload.map((entry: any, index: number) => {
+                        const col = availableColumns.find(c => c.col_name === entry.dataKey);
+                        return (
+                            <p key={index} className="text-sm" style={{ color: entry.color }}>
+                                {col?.label || entry.dataKey}: <span className="font-semibold">{entry.value?.toFixed(1)}°C</span>
+                            </p>
+                        );
+                    })}
+                </div>
+            );
+        }
+        return null;
     };
 
     if (!customerId) {
@@ -254,15 +284,56 @@ const CustomerGraphPage = () => {
                                     <div className="h-[500px] flex items-center justify-center">
                                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                                     </div>
-                                ) : plotlyData.length > 0 && plotlyData[0].x.length > 0 ? (
-                                    <Plot
-                                        key={selectedColumns.join(",")}
-                                        data={plotlyData}
-                                        layout={plotlyLayout}
-                                        config={plotlyConfig}
-                                        style={{ width: "100%" }}
-                                        useResizeHandler
-                                    />
+                                ) : chartData.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={500}>
+                                        <LineChart
+                                            data={chartData}
+                                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                            <XAxis
+                                                dataKey="timestamp"
+                                                type="number"
+                                                domain={[
+                                                    new Date(dateRange.startDate).setHours(0, 0, 0, 0),
+                                                    new Date(dateRange.endDate).setHours(23, 59, 59, 999)
+                                                ]}
+                                                scale="time"
+                                                tickFormatter={(timestamp) => {
+                                                    const date = new Date(timestamp);
+                                                    return `${date.getUTCDate()}. ${date.toLocaleString('de-DE', {
+                                                        month: 'short',
+                                                        timeZone: 'UTC'
+                                                    })} ${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
+                                                }}
+                                                tick={{ fontSize: 12 }}
+                                                stroke="#6b7280"
+                                            />
+                                            <YAxis
+                                                label={{ value: 'Temperatur (°C)', angle: -90, position: 'insideLeft' }}
+                                                tick={{ fontSize: 12 }}
+                                                stroke="#6b7280"
+                                            />
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Legend
+                                                wrapperStyle={{ paddingTop: '20px' }}
+                                                formatter={(value) => {
+                                                    const col = availableColumns.find(c => c.col_name === value);
+                                                    return col?.label || value;
+                                                }}
+                                            />
+                                            {selectedColumns.map((colName, index) => (
+                                                <Line
+                                                    key={colName}
+                                                    type="linear"
+                                                    dataKey={colName}
+                                                    stroke={colors[index % colors.length]}
+                                                    strokeWidth={2}
+                                                    dot={false}
+                                                />
+                                            ))}
+                                        </LineChart>
+                                    </ResponsiveContainer>
                                 ) : (
                                     <div className="h-[500px] flex items-center justify-center text-gray-500">
                                         Keine Daten verfügbar
@@ -295,9 +366,10 @@ const CustomerGraphPage = () => {
                                         key={stat.col_name}
                                         className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
                                     >
-                                        <h3 className="text-sm font-bold text-gray-700 mb-3">
+                                        <div><h3 className="text-sm font-bold text-gray-700 mb-3">
                                             {stat.label}
-                                        </h3>
+                                        </h3></div>
+
                                         <div className="space-y-2">
                                             <div>
                                                 <span className="text-2xl font-bold text-gray-900">

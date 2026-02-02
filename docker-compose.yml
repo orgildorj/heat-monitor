@@ -8,7 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-    # - C:/heat-manager-server/pgdata:/var/lib/postgresql
+      # - C:/heat-manager-server/pgdata:/var/lib/postgresql
       - postgres_data:/var/lib/postgresql
     restart: unless-stopped
 
@@ -30,7 +30,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "127.0.0.1:8080:8080"
+      - "8080:8080"
     volumes:
       - ./config.json:/app/config.json:rw
 
@@ -39,7 +39,7 @@ services:
     ports:
       - "80:3000"
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
     restart: unless-stopped
 
 volumes:
