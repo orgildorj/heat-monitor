@@ -7,6 +7,7 @@ import (
 	"hm-backend/service"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -43,13 +44,30 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowAllOrigins:  true,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+    AllowOriginFunc: func(origin string) bool {
+        // Allow localhost (any port)
+        if strings.HasPrefix(origin, "http://localhost") || 
+           strings.HasPrefix(origin, "http://127.0.0.1") {
+            return true
+        }
+        // Allow local network (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+        if strings.HasPrefix(origin, "http://192.168.") || 
+           strings.HasPrefix(origin, "http://10.") ||
+           strings.Contains(origin, "http://172.") {
+            return true
+        }
+        // Allow Tailscale (100.x.x.x)
+        if strings.HasPrefix(origin, "http://100.") {
+            return true
+        }
+        return false
+    },
+    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+    ExposeHeaders:    []string{"Content-Length"},
+    AllowCredentials: true,
+    MaxAge:           12 * time.Hour,
+}))
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
