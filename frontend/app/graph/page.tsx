@@ -128,49 +128,22 @@ const CustomerGraphPage = () => {
             (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
         );
 
-        // Max gap in milliseconds before breaking the line (e.g., 1 hour)
-        const MAX_GAP_MS = 60 * 60 * 1000; // 1 hour
-
-        const result: any[] = [];
-
-        sorted.forEach((point, index) => {
+        return sorted.map((point) => {
             const date = new Date(point.time);
             const formatted = `${date.getUTCDate()}. ${date.toLocaleString('de-DE', {
                 month: 'short',
                 timeZone: 'UTC'
             })} ${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
 
-            // Add the current point
-            result.push({
+            return {
                 time: formatted,
                 timestamp: date.getTime(),
                 ...selectedColumns.reduce((acc, colName) => ({
                     ...acc,
                     [colName]: point.values?.[colName] ?? null
                 }), {})
-            });
-
-            // Check if there's a gap to the next point
-            if (index < sorted.length - 1) {
-                const currentTime = date.getTime();
-                const nextTime = new Date(sorted[index + 1].time).getTime();
-                const gap = nextTime - currentTime;
-
-                // If gap is too large, insert a null point to break the line
-                if (gap > MAX_GAP_MS) {
-                    result.push({
-                        time: '',
-                        timestamp: currentTime + 1, // Just after current point
-                        ...selectedColumns.reduce((acc, colName) => ({
-                            ...acc,
-                            [colName]: null
-                        }), {})
-                    });
-                }
-            }
+            };
         });
-
-        return result;
     }, [graphData, selectedColumns]);
 
     // Color palette for lines
@@ -329,6 +302,7 @@ const CustomerGraphPage = () => {
                                                     dataKey={colName}
                                                     stroke={colors[index % colors.length]}
                                                     strokeWidth={2}
+                                                    connectNulls={true}
                                                     dot={false}
                                                 />
                                             ))}
